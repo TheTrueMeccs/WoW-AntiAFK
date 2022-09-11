@@ -35,6 +35,7 @@ Global $RED_COLOR = 0xFF0000
 Global $WOW_WINDOW_NAME = "World of Warcraft"
 Global $MOVEMENT_KEYS[4] = ["a", "d", "w", "s"]
 
+
 While 1
 	Sleep(10)
 
@@ -46,7 +47,9 @@ WEnd
 
 
 Func _Switch_Specific_Window_Options()
-	If (GUICtrlRead($wowInactiveCheckbox) = $GUI_CHECKED) Then
+	$activeWoWEnabled = GUICtrlRead($wowInactiveCheckbox)
+
+	If ($activeWoWEnabled = $GUI_CHECKED) Then
 		GUICtrlSetState($activeWindowNameLabel, $GUI_ENABLE)
 		GUICtrlSetState($windowNameInput, $GUI_ENABLE)
 	Else
@@ -87,8 +90,16 @@ Func _Run_Anti_AFK()
 		WinActivate(GUICtrlRead($windowNameInput))
 	EndIf
 
-	$randomval = Random(GUICtrlRead($minimumWaitTimeInput) * 1000, GUICtrlRead($maximumWaitTimeInput) * 1000)
-	Sleep($randomval)
+	$randomval = Random(GUICtrlRead($minimumWaitTimeInput) * 100, GUICtrlRead($maximumWaitTimeInput) * 100)
+
+	For $i = 0 To $randomval Step 1
+		If (Not $antiAfkOn) Then
+			Return
+		EndIf
+
+		Sleep(10)
+	Next
+
 EndFunc ;==>_Run_Anti_AFK
 
 
