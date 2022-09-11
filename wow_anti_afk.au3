@@ -11,7 +11,7 @@ $activeWindowNameLabel = GUICtrlCreateLabel("Name of the window to switch to", 2
 $wowInactiveCheckbox = GUICtrlCreateCheckbox("Make WoW inactive after moving", 8, 120, 185, 17)
 GUICtrlSetState(-1, $GUI_CHECKED)
 $windowNameInput = GUICtrlCreateInput("WoW AntiAFK", 24, 160, 193, 21)
-$programActiveLabel = GUICtrlCreateLabel("Anti AFK is turned off", 304, 144, 120, 14)
+$programActiveLabel = GUICtrlCreateLabel("AntiAFK is turned off", 304, 144, 120, 14)
 $noteLabel = GUICtrlCreateLabel("Tip: To save energy, set WoW background FPS to minimum and make WoW inactive after moving", 8, 200, 470, 17)
 $maximumWaitTimeInput = GUICtrlCreateInput("600", 160, 88, 49, 21)
 $minimumWaitTimeInput = GUICtrlCreateInput("300", 160, 64, 49, 21)
@@ -25,6 +25,7 @@ GUISetState(@SW_SHOW)
 Opt("GUIOnEventMode", 1)
 GUISetOnEvent($GUI_EVENT_CLOSE, "_Exit")
 GUICtrlSetOnEvent($antiAfkButton, "_Switch_Anti_AFK")
+GUICtrlSetOnEvent($wowInactiveCheckbox, "_Switch_Specific_Window_Options")
 
 Global $keys[4] = ["a", "d", "w", "s"]
 Global $antiAfkOn = False
@@ -40,24 +41,11 @@ While 1
 		Sleep(1000)
 		_Run_Anti_AFK()
 	EndIf
-
-	_Check_Inactive_Wow_Checkbox()
 WEnd
 
 
-Func _Check_Inactive_Wow_Checkbox()
-	Local $wowInactiveCheckboxState = GUICtrlRead($wowInactiveCheckbox)
-
-	If ($activeWoWEnabled <> $wowInactiveCheckboxState) Then
-		_Switch_Specific_Window_Options($wowInactiveCheckboxState)
-	EndIF
-
-	$activeWoWEnabled = GUICtrlRead($wowInactiveCheckbox)
-EndFunc ;==>_Check_Inactive_Wow_Checkbox
-
-
-Func _Switch_Specific_Window_Options($optionsEnabled)
-	If ($optionsEnabled = $GUI_CHECKED) Then
+Func _Switch_Specific_Window_Options()
+	If (GUICtrlRead($wowInactiveCheckbox) = $GUI_CHECKED) Then
 		GUICtrlSetState($activeWindowNameLabel, $GUI_ENABLE)
 		GUICtrlSetState($windowNameInput, $GUI_ENABLE)
 	Else
@@ -72,11 +60,11 @@ Func _Switch_Anti_AFK()
 
 	if ($antiAfkOn) Then
 		GUICtrlSetColor($programActiveLabel, $GREEN_COLOR)
-		GUICtrlSetData($programActiveLabel, "Anti AFK is turned on")
+		GUICtrlSetData($programActiveLabel, "AntiAFK is turned on")
 		GUICtrlSetData($antiAfkButton, "Stop Anti AFK")
 	Else
 		GUICtrlSetColor($programActiveLabel, $RED_COLOR)
-		GUICtrlSetData($programActiveLabel, "Anti AFK is turned off")
+		GUICtrlSetData($programActiveLabel, "AntiAFK is turned off")
 		GUICtrlSetData($antiAfkButton, "Run Anti AFK")
 	EndIF
 EndFunc ;==>__Switch_Anti_AFK
@@ -92,8 +80,8 @@ Func _Run_Anti_AFK()
 	If ($activeWoWEnabled = $GUI_CHECKED) Then
 		WinActivate(GUICtrlRead($windowNameInput))
 	EndIf
+
 	$randomval = Random(GUICtrlRead($minimumWaitTimeInput) * 1000, GUICtrlRead($maximumWaitTimeInput) * 1000)
-	ConsoleWrite($randomval & @CRLF)
 	Sleep($randomval)
 EndFunc ;==>_Run_Anti_AFK
 
