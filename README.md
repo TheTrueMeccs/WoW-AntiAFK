@@ -1,3 +1,3 @@
 # WoW AntiAFK
  
- <h4>How it works</h4>
+ <h2>How it works</h2>
