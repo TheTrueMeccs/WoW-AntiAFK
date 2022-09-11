@@ -27,12 +27,13 @@ GUISetOnEvent($GUI_EVENT_CLOSE, "_Exit")
 GUICtrlSetOnEvent($antiAfkButton, "_Switch_Anti_AFK")
 GUICtrlSetOnEvent($wowInactiveCheckbox, "_Switch_Specific_Window_Options")
 
-Global $keys[4] = ["a", "d", "w", "s"]
 Global $antiAfkOn = False
 Global $activeWoWEnabled = GUICtrlRead($wowInactiveCheckbox)
 
 Global $GREEN_COLOR = 0x32CD32
 Global $RED_COLOR = 0xFF0000
+Global $WOW_WINDOW_NAME = "World of Warcraft"
+Global $MOVEMENT_KEYS[4] = ["a", "d", "w", "s"]
 
 While 1
 	Sleep(10)
@@ -58,6 +59,11 @@ EndFunc ;==> _Enable_Specific_Window_Options
 Func _Switch_Anti_AFK()
 	$antiAfkOn = Not $antiAfkOn
 
+	if (Not WinExists($WOW_WINDOW_NAME)) Then
+		MsgBox(0x0, "Error", "Make sure WoW is turned on")
+		Return
+	EndIf
+
 	if ($antiAfkOn) Then
 		GUICtrlSetColor($programActiveLabel, $GREEN_COLOR)
 		GUICtrlSetData($programActiveLabel, "AntiAFK is turned on")
@@ -71,8 +77,8 @@ EndFunc ;==>__Switch_Anti_AFK
 
 
 Func _Run_Anti_AFK()
-	WinActivate("World of Warcraft")
-	$randomKey = $keys[Random(0, 3)]
+	WinActivate($WOW_WINDOW_NAME)
+	$randomKey = $MOVEMENT_KEYS[Random(0, 3)]
 	Send("{" & $randomKey & " down}")
 	Sleep(Random(50, 180))
 	Send("{" & $randomKey & " up}")
