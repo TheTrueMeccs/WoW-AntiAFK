@@ -1,1 +1,1 @@
-# WoW-Anti-AFK
+# WoW AntiAFK
