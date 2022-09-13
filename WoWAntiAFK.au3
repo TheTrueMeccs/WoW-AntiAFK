@@ -45,6 +45,7 @@ Global $antiAfkOn = False
 Global $activeWindowEnabled = GUICtrlRead($wowInactiveCheckbox)
 Global $hitEnterEnabled = GUICtrlRead($enterCheckbox)
 Global $timeUntilNextMove = 0
+Global $prevClampedTimeElapsed = 0
 
 Global $GREEN_COLOR = 0x32CD32
 Global $RED_COLOR = 0xFF0000
@@ -109,16 +110,11 @@ EndFunc ;==>__Switch_Anti_AFK
 
 Func _Run_Anti_AFK()
 	$randomWaitTime = Random(GUICtrlRead($minimumWaitTimeInput) * 100, GUICtrlRead($maximumWaitTimeInput) * 100)
+	GUICtrlSetData($timeUntilNextMoveLabel, Number(($randomWaitTime) / 100, 1) & " seconds until next move")
 
-	For $i = 0 To $randomWaitTime Step 1.6666
-		If (Not $antiAfkOn) Then
-			Return
-		EndIf
-
-		GUICtrlSetData($timeUntilNextMoveLabel, Number(($randomWaitTime - $i) / 100, 1) & " seconds until next move")
-
-		Sleep(10)
-	Next
+	If (_Wait_For_Next_Move($randomWaitTime) = -1) Then
+		Return
+	EndIf
 
 	WinActivate($WOW_WINDOW_NAME)
 
@@ -137,6 +133,26 @@ Func _Run_Anti_AFK()
 EndFunc ;==>_Run_Anti_AFK
 
 
+Func _Wait_For_Next_Move($randomWaitTime)
+	For $i = 0 To $randomWaitTime Step 1.6666
+		If (Not $antiAfkOn) Then
+			Return -1
+		EndIf
+
+		$clampedTimeElapsed = $i - Mod($i, 100)
+
+		; Necessary to stop timer text from flickering
+		If ($clampedTimeElapsed <> $prevClampedTimeElapsed) Then
+			GUICtrlSetData($timeUntilNextMoveLabel, Number(($randomWaitTime - $i) / 100, 1) & " seconds until next move")
+		EndIf
+
+		$prevClampedTimeElapsed = $clampedTimeElapsed
+
+		Sleep(10)
+	Next
+EndFunc ;==> _Wait_For_Next_Move
+
+
 Func _Exit()
 	Exit
-EndFunc   ;==>_Exit
+EndFunc ;==>_Exit
